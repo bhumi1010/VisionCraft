@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>VisionCraft | Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="dashboard">
+  <h1 id="welcome"></h1>
+  <p>Your personal vision space</p>
+
+  <div class="card">📌 Create Vision Board</div>
+  <div class="card">🎯 Goals & Tasks</div>
+  <div class="card">📊 Progress Tracking</div>
+
+  <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<script>
+async function checkAuth() {
+  const res = await fetch("/auth-check");
+  const data = await res.json();
+
+  if (!data.loggedIn) {
+    window.location.href = "/";
+  } else {
+    document.getElementById("welcome").innerText =
+      "Welcome, " + data.user.name + " 🌸";
+  }
+}
+
+async function logout() {
+  await fetch("/logout", { method: "POST" });
+  window.location.href = "/";
+}
+
+checkAuth();
+</script>
+
+</body>
+</html>
