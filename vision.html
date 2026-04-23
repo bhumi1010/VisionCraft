@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Vision Board 🌈</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="navbar">
+  <h2>🖼️ My Vision Board ✨</h2>
+  <a href="home.html">⬅ Back</a>
+</div>
+
+<div class="container">
+
+  <!-- ADD TO BOARD -->
+  <div class="card">
+    <h3>✨ Build Your Vision 🌈</h3>
+
+    <input type="file" accept="image/*" onchange="addImage(event)">
+    <textarea id="visionText" placeholder="Add affirmation / goal text 💫"></textarea>
+    <button onclick="addText()">➕ Add Text Block</button>
+  </div>
+
+  <!-- ACTUAL BOARD -->
+  <div class="card">
+    <h3>🌌 My Dream Life Board 💜</h3>
+    <div class="vision-board" id="board"></div>
+  </div>
+
+</div>
+
+<script>
+async function addImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    await fetch("/add-vision", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({
+        type: "image",
+        content: reader.result
+      })
+    });
+    loadVision();
+  };
+  reader.readAsDataURL(file);
+}
+
+async function addText() {
+  const text = visionText.value;
+  if (!text) return;
+
+  await fetch("/add-vision", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      type: "text",
+      content: text
+    })
+  });
+
+  visionText.value = "";
+  loadVision();
+}
+
+async function deleteVision(id) {
+  await fetch("/delete-vision", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ id })
+  });
+
+  loadVision();
+}
+
+async function loadVision() {
+  const res = await fetch("/get-vision");
+  const data = await res.json();
+
+  board.innerHTML = "";
+
+  data.forEach(v => {
+    if (v.type === "image") {
+      board.innerHTML += `
+        <div class="vision-item">
+          <img src="${v.content}">
+          <button onclick="deleteVision(${v.id})">🗑</button>
+        </div>`;
+    } else {
+      board.innerHTML += `
+        <div class="vision-item text-block">
+          ✨ ${v.content}
+          <button onclick="deleteVision(${v.id})">🗑</button>
+        </div>`;
+    }
+  });
+}
+
+loadVision();
+</script>
+
+</body>
+</html>

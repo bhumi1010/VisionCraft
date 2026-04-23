@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Goals & Tasks 🎯</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="navbar">
+  <h2>🎯 My Goals & Habits ✨</h2>
+  <a href="home.html">⬅ Back</a>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <h3>✨ Create Your Goal 💫</h3>
+    <input id="category" placeholder="Category (eg. Fitness, Academics)">
+    <input id="goal" placeholder="Goal (eg. Get abs)">
+    <select id="period">
+      <option>Weekly</option>
+      <option>Monthly</option>
+      <option>Daily</option>
+    </select>
+    <button onclick="addGoal()">ADD GOAL 🚀</button>
+  </div>
+
+  <div id="goalArea"></div>
+
+</div>
+
+<script>
+async function addGoal() {
+  await fetch("/add-goal", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      category: category.value,
+      goal: goal.value,
+      period: period.value
+    })
+  });
+
+  category.value = goal.value = "";
+  loadGoals();
+}
+
+async function addTask(id) {
+  const text = prompt("Enter task");
+  if (!text) return;
+
+  await fetch("/add-task", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ id, text })
+  });
+
+  loadGoals();
+}
+
+async function deleteGoal(id) {
+  await fetch("/delete-goal", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ id })
+  });
+
+  loadGoals();
+}
+
+async function toggle(id, index) {
+  await fetch("/toggle-task", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ id, index })
+  });
+
+  loadGoals();
+}
+
+async function loadGoals() {
+  const res = await fetch("/get-goals");
+  const goals = await res.json();
+
+  goalArea.innerHTML = "";
+
+  goals.forEach(g => {
+    const done = g.tasks.filter(t => t.done).length;
+    const total = g.tasks.length || 1;
+    const p = Math.floor((done / total) * 100);
+
+    goalArea.innerHTML += `
+      <div class="card">
+        <h3>${g.category} ✨</h3>
+        <b>${g.goal}</b> (${g.period})
+        <div class="progress"><div style="width:${p}%"></div></div>
+        <small>${p}% completed</small>
+
+        ${g.tasks.map((t,i)=>`
+          <div class="task">
+            ${t.text}
+            <input type="checkbox" ${t.done?"checked":""}
+              onclick="toggle(${g.id},${i})">
+          </div>`).join("")}
+
+        <button onclick="addTask(${g.id})">➕ Add Task</button>
+        <button onclick="deleteGoal(${g.id})">🗑 Delete</button>
+      </div>
+    `;
+  });
+}
+
+loadGoals();
+</script>
+
+</body>
+</html>

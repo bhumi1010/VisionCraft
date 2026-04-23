@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1776225859692,
+    "userEmail": "bhumipopat3@gmail.com",
+    "category": "Academic ",
+    "goal": "Learn AWT",
+    "period": "Weekly",
+    "tasks": [
+      {
+        "text": "MongoDB",
+        "done": true
+      }
+    ]
+  },
+  {
+    "id": 1776225880751,
+    "userEmail": "bhumipopat3@gmail.com",
+    "category": "Personal",
+    "goal": "Learn Vocabulary",
+    "period": "Weekly",
+    "tasks": [
+      {
+        "text": "Learn Novel",
+        "done": false
+      }
+    ]
+  },
+  {
+    "id": 1776225920313,
+    "userEmail": "bhumipopat3@gmail.com",
+    "category": "Fitness",
+    "goal": "Muscle Training",
+    "period": "Daily",
+    "tasks": [
+      {
+        "text": "Go to Gym",
+        "done": true
+      }
+    ]
+  }
+]
